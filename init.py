@@ -156,7 +156,7 @@ def compile_cpp(account_name, code):
         return False
     return True
 
-def publish_cpp_contract(account_name, code):
+def publish_cpp_contract(account_name, code, abi=''):
     if not os.path.exists('tmp'):
         os.mkdir(tmp)
     assert compile_cpp(account_name, code)
@@ -169,7 +169,6 @@ def publish_cpp_contract(account_name, code):
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
         print('update contract')
-        abi = ''
         r = eosapi.set_contract(account_name, code, abi, 0)
 
 #print(find_include_path())
