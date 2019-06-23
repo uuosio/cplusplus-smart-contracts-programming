@@ -150,9 +150,11 @@ def compile_cpp(contract):
     return True
 
 def publish_cpp_contract(account_name, code):
-    r = open(f'{account_name}.cpp', 'w').write(code)
-    assert compile_cpp(account_name)
-    code = open(f'{account_name}.wasm', 'rb').read()
+    if not os.path.exists('tmp'):
+        os.mkdir(tmp)
+    r = open(f'tmp/{account_name}.cpp', 'w').write(code)
+    assert compile_cpp('tmp/'+account_name)
+    code = open(f'tmp/{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
     m.update(code)
     code_hash = m.hexdigest()
