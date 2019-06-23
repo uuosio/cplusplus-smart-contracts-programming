@@ -148,4 +148,19 @@ def compile_cpp(contract):
         print(e.output.decode('utf8'))
         return False
     return True
+
+def publish_cpp_contract(account_name, code):
+    r = open(f'{account_name}.cpp', 'w').write(code)
+    assert compile_cpp(account_name)
+    code = open(f'{account_name}.wasm', 'rb').read()
+    m = hashlib.sha256()
+    m.update(code)
+    code_hash = m.hexdigest()
+
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        print('update contract')
+        abi = ''
+        r = eosapi.set_contract(account_name, code, abi, 0)
+
 #print(find_include_path())
