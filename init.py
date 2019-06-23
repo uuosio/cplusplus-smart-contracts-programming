@@ -76,11 +76,18 @@ def set_abi(account, abi):
     setabi ={'account':account, 'abi':abi.hex()}
     eosapi.push_action('eosio', 'setabi', setabi, {account:'active'})
 
-def compile_cpp(contract):
+def compile_cpp(account_name, code):
+    tmp_path = f'tmp/{account_name}'
+    if os.path.exists(f'{tmp_path}.cpp'):
+        old_code = open(f'{tmp_path}.cpp')
+        if old_code == code:
+            return True
+        r = open(f'{tmp_path}.cpp', 'w').write(code)
+
     clang_7_args = ['/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/clang-7',
      '-o',
-     f'{contract}.obj',
-     f'{contract}.cpp',
+     f'{tmp_path}.obj',
+     f'{tmp_path}.cpp',
      '--target=wasm32',
      '-ffreestanding',
      '-nostdlib',
@@ -124,12 +131,12 @@ def compile_cpp(contract):
      '-leosio_dsm',
      '-mllvm',
      '-use-cfl-aa-in-codegen=both',
-     'test.obj',
+     f'{tmp_path}.obj',
      '-L/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../lib',
      '-stack-first',
      '--lto-O3',
      '-o',
-     f'{contract}.wasm',
+     f'{tmp_path}.wasm',
      '--allow-undefined-file=/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../eosio.imports']
 
     #%system rm test.obj test.wasm
@@ -152,8 +159,8 @@ def compile_cpp(contract):
 def publish_cpp_contract(account_name, code):
     if not os.path.exists('tmp'):
         os.mkdir(tmp)
-    r = open(f'tmp/{account_name}.cpp', 'w').write(code)
-    assert compile_cpp('tmp/'+account_name)
+    assert compile_cpp(account_name, code)
+
     code = open(f'tmp/{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
     m.update(code)
