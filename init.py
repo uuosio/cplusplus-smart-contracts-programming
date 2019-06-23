@@ -76,14 +76,11 @@ def set_abi(account, abi):
     setabi ={'account':account, 'abi':abi.hex()}
     eosapi.push_action('eosio', 'setabi', setabi, {account:'active'})
 
-def compile_cpp(account_name, code):
-    tmp_path = f'tmp/{account_name}'
-    if os.path.exists(f'{tmp_path}.cpp'):
-        old_code = open(f'{tmp_path}.cpp')
-        if old_code == code:
+def compile_cpp_file(src_path, includes = []):
+    tmp_path = src_path
+    if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
+        if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
             return True
-        r = open(f'{tmp_path}.cpp', 'w').write(code)
-
     clang_7_args = ['/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/clang-7',
      '-o',
      f'{tmp_path}.obj',
@@ -117,6 +114,8 @@ def compile_cpp(account_name, code):
      '-O3',
      '--std=c++17',
      ]
+    for include in includes:
+        clang_7_args.append(f"-I{include}")
 
     wasm_ld_args = ['/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/wasm-ld',
      '--gc-sections',
@@ -144,7 +143,6 @@ def compile_cpp(account_name, code):
     #%system eosio-ld test.obj -o test.wasm
     #%ls
 
-
     try:
         ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
         print(ret.decode('utf8'))
@@ -156,10 +154,19 @@ def compile_cpp(account_name, code):
         return False
     return True
 
-def publish_cpp_contract(account_name, code, abi=''):
+def compile_cpp_src(src_path, code, includes = []):
+    tmp_path = src_path
+    if os.path.exists(f'{tmp_path}.cpp'):
+        old_code = open(f'{tmp_path}.cpp')
+        if old_code == code:
+            return True
+        r = open(f'{tmp_path}.cpp', 'w').write(code)
+    return compile_cpp_file(tmp_path, includes)
+
+def publish_cpp_contract(account_name, code, abi='', includes = []):
     if not os.path.exists('tmp'):
         os.mkdir(tmp)
-    assert compile_cpp(account_name, code)
+    assert compile_cpp_src(f'tmp/{account_name}', code, includes)
 
     code = open(f'tmp/{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
@@ -171,4 +178,18 @@ def publish_cpp_contract(account_name, code, abi=''):
         print('update contract')
         r = eosapi.set_contract(account_name, code, abi, 0)
 
+def publish_cpp_contract_from_file(account_name, file_name, includes = []):
+    assert compile_cpp_file(file_name, includes)
+
+    code = open(f'{file_name}.wasm', 'rb').read()
+    m = hashlib.sha256()
+    m.update(code)
+    code_hash = m.hexdigest()
+
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        print('update contract')
+        abi = open(f'{file_name}.abi', 'r').read()
+        r = eosapi.set_contract(account_name, code, abi, 0)
+    print('done!')
 #print(find_include_path())
