@@ -5,4 +5,9 @@ test.wasm
 test.obj
 test.wallet
 wasm-ld.c
-
+helloworld11.cpp
+helloworld33.cpp
+helloworld11.obj
+helloworld33.obj
+helloworld11.wasm
+helloworld33.wasm
