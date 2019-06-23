@@ -175,7 +175,6 @@ def publish_cpp_contract(account_name, code, abi='', includes = []):
 
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
-        print('update contract')
         r = eosapi.set_contract(account_name, code, abi, 0)
 
 def publish_cpp_contract_from_file(account_name, file_name, includes = []):
