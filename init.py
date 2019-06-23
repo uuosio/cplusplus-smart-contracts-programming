@@ -139,11 +139,13 @@ def compile_cpp(contract):
 
 
     try:
-        ret = subprocess.check_output(clang_7_args)
-        print('clang_7 output:', ret.decode('utf8'))
-        ret = subprocess.check_output(wasm_ld_args)
-        print('wasm_ld output:', ret.decode('utf8'))
-    except Exception as e:
-        print('error', e)
-
-print(find_include_path())
+        ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
+        print(ret.decode('utf8'))
+        ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
+        print(ret.decode('utf8'))
+    except subprocess.CalledProcessError as e:
+        print("error (code {}):".format(e.returncode))
+        print(e.output.decode('utf8'))
+        return False
+    return True
+#print(find_include_path())
