@@ -191,5 +191,5 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = []):
         print('update contract')
         abi = open(f'{file_name}.abi', 'r').read()
         r = eosapi.set_contract(account_name, code, abi, 0)
-    print('done!')
+    return True
 #print(find_include_path())
