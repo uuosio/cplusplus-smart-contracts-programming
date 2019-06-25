@@ -163,7 +163,7 @@ def compile_cpp_src(src_path, code, includes = [], entry='apply'):
     else:
         src_path += '.cpp'
     if os.path.exists(src_path):
-        old_code = open(src_path)
+        old_code = open(src_path).read()
         if old_code == code:
             return True
     with open(src_path, 'w') as f:
