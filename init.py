@@ -82,7 +82,10 @@ def compile_cpp_file(src_path, includes = [], entry='apply'):
     #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
     #%system eosio-ld test.obj -o test.wasm
     #%ls
-
+    if sys.platform == 'darwin':
+        dl_sufix = 'dylib'
+    else:
+        dl_sufix = 'so'
     eosio_cdt_path = find_eosio_cdt_path()
     clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
      '-o',
@@ -101,8 +104,8 @@ def compile_cpp_file(src_path, includes = [], entry='apply'):
      '-Xclang',
      '-load',
      '-Xclang',
-     f'{eosio_cdt_path}/bin/LLVMEosioApply.dylib',
-     f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.dylib',
+     f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
+     f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
      '-mllvm',
      '-use-cfl-aa-in-codegen=both',
      f'-I{eosio_cdt_path}/bin/../include/libcxx',
