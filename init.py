@@ -158,6 +158,7 @@ def compile_cpp_src(src_path, code, includes = [], entry='apply'):
         old_code = open(f'{tmp_path}.cpp')
         if old_code == code:
             return True
+    else:
         r = open(f'{tmp_path}.cpp', 'w').write(code)
     return compile_cpp_file(tmp_path, includes, entry)
 
