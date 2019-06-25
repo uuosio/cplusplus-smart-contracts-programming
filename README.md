@@ -1,6 +1,6 @@
 # C++ Smart Contract Programming
 
-[C++ Smart Contract Programming Brief Introduction](https://youtu.be/3s2IW0o7bdE)
+[C++ Smart Contract Programming Brief Introduction](https://youtu.be/cryCJU-uIy0)
 
 
 # Contents
