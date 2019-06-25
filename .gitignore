@@ -3,3 +3,6 @@ __pycache__
 tmp
 wasm-ld.c
 test.wallet
+*.obj
+*.wasm
+
