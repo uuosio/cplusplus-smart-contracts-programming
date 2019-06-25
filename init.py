@@ -166,8 +166,8 @@ def compile_cpp_src(src_path, code, includes = [], entry='apply'):
         old_code = open(src_path)
         if old_code == code:
             return True
-    else:
-        r = open(src_path, 'w').write(code)
+    with open(src_path, 'w') as f:
+        f.write(code)
     return compile_cpp_file(src_path, includes, entry)
 
 def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
