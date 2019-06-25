@@ -1,4 +1,4 @@
-# Python Smart Contract Programming
+# C++ Smart Contract Programming
 
 # Contents
 
@@ -11,7 +11,7 @@
 > - [7.require_recipient](07.require_recipient.ipynb)
 > - [8.require_recipient-2](08.require_recipient-2.ipynb)
 > - [9.send_inline](09.send_inline.ipynb)
-> - [10.deferred-transaction](10.deferred-transaction.ipynb)
+> - [10.deferred-transaction](10.deffered_transanction.ipynb)
 > - [11.authority](11.authority.ipynb)
 > - [12.multisign](12.multi-sign.ipynb)
 > - [13.token](13.token.ipynb)
@@ -20,5 +20,5 @@
 > - [16.crypto](16.crypto.ipynb)
 > - [17.database-1](17.database-1.ipynb)
 > - [18.database-2-multi-index](18.database-multiindex.ipynb)
-> - [19.database-3-application](19.database-3-implementation.ipynb)
-> - [20.call c++ code from python](20.call-c++-contract.ipynb)
+> - [19.database-3](19.database-3.ipynb)
+> - [20.call code of other contract](call-other-contract.ipynb)
