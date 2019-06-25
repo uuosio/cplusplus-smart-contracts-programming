@@ -174,7 +174,7 @@ def compile_cpp_src(src_path, code, includes = [], entry='apply'):
 
 def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
     if not os.path.exists('tmp'):
-        os.mkdir(tmp)
+        os.mkdir('tmp')
     assert compile_cpp_src(f'tmp/{account_name}', code, includes, entry=entry)
 
     code = open(f'tmp/{account_name}.wasm', 'rb').read()
