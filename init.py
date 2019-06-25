@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import hashlib
 import marshal
@@ -16,18 +17,6 @@ psw = wallet.create('test')
 
 wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
 wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
-
-def find_include_path():
-    eosio_link = shutil.which('eosio-cpp')
-    eosio_cpp = os.readlink(eosio_link)
-
-    if eosio_cpp[:2] == '..':
-        eosio_cpp = os.path.join(os.path.dirname(eosio_link), eosio_cpp)
-    eosio_cpp = os.path.abspath(eosio_cpp)
-    eosio_cpp = os.path.dirname(eosio_cpp)
-    eosio_cpp = os.path.dirname(eosio_cpp)
-    return os.path.join(eosio_cpp, 'opt/eosio.cdt/include/eosiolib/capi')
-
 
 def publish_contract(account_name, code, abi):
     m = hashlib.sha256()
@@ -76,12 +65,24 @@ def set_abi(account, abi):
     setabi ={'account':account, 'abi':abi.hex()}
     eosapi.push_action('eosio', 'setabi', setabi, {account:'active'})
 
-def compile_cpp_file(src_path, includes = [], entry='apply'):
-    tmp_path = src_path
-    if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
-        if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
-            return True
-    clang_7_args = ['/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/clang-7',
+def find_eosio_cdt_path():
+    eosio_cpp = shutil.which('eosio-cpp')
+    if not eosio_cpp:
+        raise "eosio.cdt not installed, please refer to https://github.com/eosio/eosio.cdt for an installation guild"
+    eosio_cpp = os.path.realpath(eosio_cpp)
+    eosio_cpp = os.path.dirname(eosio_cpp)
+    return os.path.dirname(eosio_cpp)
+
+clang_7_args = None
+wasm_ld_args = None
+
+def setup_eosio_cdt():
+    global clang_7_args
+    global wasm_ld_args
+    if clang_7_args:
+        return
+    eosio_cdt_path = find_eosio_cdt_path()
+    clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
      '-o',
      f'{tmp_path}.obj',
      f'{tmp_path}.cpp',
@@ -98,26 +99,26 @@ def compile_cpp_file(src_path, includes = [], entry='apply'):
      '-Xclang',
      '-load',
      '-Xclang',
-     '/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/LLVMEosioApply.dylib',
-     '-fplugin=/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/eosio_plugin.dylib',
+     f'{eosio_cdt_path}/bin/LLVMEosioApply.dylib',
+     f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.dylib',
      '-mllvm',
      '-use-cfl-aa-in-codegen=both',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../include/libcxx',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../include/libc',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../include',
-     '--sysroot=/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../include/eosiolib/core',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../include/eosiolib/contracts',
+     f'-I{eosio_cdt_path}/bin/../include/libcxx',
+     f'-I{eosio_cdt_path}/bin/../include/libc',
+     f'-I{eosio_cdt_path}/bin/../include',
+     f'--sysroot={eosio_cdt_path}/bin/../',
+     f'-I{eosio_cdt_path}/bin/../include/eosiolib/core',
+     f'-I{eosio_cdt_path}/bin/../include/eosiolib/contracts',
      '-c',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi',
-     '-I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core',
+     f'-I{eosio_cdt_path}/include/eosiolib/capi',
+     f'-I{eosio_cdt_path}/include/eosiolib/core',
      '-O3',
      '--std=c++17',
      ]
     for include in includes:
         clang_7_args.append(f"-I{include}")
 
-    wasm_ld_args = ['/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/wasm-ld',
+    wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
      '--gc-sections',
      '--strip-all',
      '-zstack-size=8192',
@@ -131,13 +132,21 @@ def compile_cpp_file(src_path, includes = [], entry='apply'):
      '-mllvm',
      '-use-cfl-aa-in-codegen=both',
      f'{tmp_path}.obj',
-     '-L/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../lib',
+     f'-L{eosio_cdt_path}/bin/../lib',
      '-stack-first',
      '--lto-O3',
      '-o',
      f'{tmp_path}.wasm',
-     '--allow-undefined-file=/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/bin/../eosio.imports']
+     f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
 
+
+def compile_cpp_file(src_path, includes = [], entry='apply'):
+    setup_eosio_cdt()
+
+    tmp_path = src_path
+    if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
+        if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
+            return True
     #%system rm test.obj test.wasm
     #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
     #%system eosio-ld test.obj -o test.wasm
