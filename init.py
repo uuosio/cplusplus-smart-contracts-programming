@@ -74,6 +74,8 @@ def find_eosio_cdt_path():
     return os.path.dirname(eosio_cpp)
 
 def compile_cpp_file(src_path, includes = [], entry='apply'):
+    if src_path.endswith('.cpp'):
+        src_path = src_path[:-4]
     tmp_path = src_path
     if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
         if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
@@ -156,14 +158,17 @@ def compile_cpp_file(src_path, includes = [], entry='apply'):
     return True
 
 def compile_cpp_src(src_path, code, includes = [], entry='apply'):
-    tmp_path = src_path
-    if os.path.exists(f'{tmp_path}.cpp'):
-        old_code = open(f'{tmp_path}.cpp')
+    if src_path.endswith('.cpp'):
+        pass
+    else:
+        src_path += '.cpp'
+    if os.path.exists(src_path):
+        old_code = open(src_path)
         if old_code == code:
             return True
     else:
-        r = open(f'{tmp_path}.cpp', 'w').write(code)
-    return compile_cpp_file(tmp_path, includes, entry)
+        r = open(src_path, 'w').write(code)
+    return compile_cpp_file(src_path, includes, entry)
 
 def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
     if not os.path.exists('tmp'):
