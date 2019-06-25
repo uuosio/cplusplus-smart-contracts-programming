@@ -73,14 +73,16 @@ def find_eosio_cdt_path():
     eosio_cpp = os.path.dirname(eosio_cpp)
     return os.path.dirname(eosio_cpp)
 
-clang_7_args = None
-wasm_ld_args = None
+def compile_cpp_file(src_path, includes = [], entry='apply'):
+    tmp_path = src_path
+    if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
+        if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
+            return True
+    #%system rm test.obj test.wasm
+    #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
+    #%system eosio-ld test.obj -o test.wasm
+    #%ls
 
-def setup_eosio_cdt():
-    global clang_7_args
-    global wasm_ld_args
-    if clang_7_args:
-        return
     eosio_cdt_path = find_eosio_cdt_path()
     clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
      '-o',
@@ -138,19 +140,6 @@ def setup_eosio_cdt():
      '-o',
      f'{tmp_path}.wasm',
      f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
-
-
-def compile_cpp_file(src_path, includes = [], entry='apply'):
-    setup_eosio_cdt()
-
-    tmp_path = src_path
-    if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
-        if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
-            return True
-    #%system rm test.obj test.wasm
-    #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
-    #%system eosio-ld test.obj -o test.wasm
-    #%ls
 
     try:
         ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
