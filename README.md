@@ -1,5 +1,8 @@
 # C++ Smart Contract Programming
 
+[C++ Smart Contract Programming Brief Introduction](https://youtu.be/3s2IW0o7bdE)
+
+
 # Contents
 
 > - [1.environment](01.environment.ipynb)
