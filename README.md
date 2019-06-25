@@ -21,4 +21,4 @@
 > - [17.database-1](17.database-1.ipynb)
 > - [18.database-2-multi-index](18.database-multiindex.ipynb)
 > - [19.database-3](19.database-3.ipynb)
-> - [20.call code of other contract](call-other-contract.ipynb)
+> - [20.call code of other contract](20.call-other-contract.ipynb)
