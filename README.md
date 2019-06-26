@@ -24,5 +24,6 @@
 > - [18.database-2-multi-index](https://uuosio.github.io/cplusplus-smart-contract-programming/18.database-multiindex.html)
 > - [19.database-3](https://uuosio.github.io/cplusplus-smart-contract-programming/19.database-3.html)
 > - [20.call code of other contract](https://uuosio.github.io/cplusplus-smart-contract-programming/20.call-other-contract.html)
+> - [21.CPU-RAM-NET](https://uuosio.github.io/cplusplus-smart-contract-programming/21.CPU-RAM-NET.html)
 
 # Happy coding!
