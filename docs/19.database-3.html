@@ -13115,7 +13115,22 @@ div#notebook {
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[76]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1">#eosapi.set_nodes([&#39;https://nodes.uuos.network:8443&#39;])</span>
+<span class="n">eosapi</span><span class="o">.</span><span class="n">set_nodes</span><span class="p">([</span><span class="s1">&#39;http://127.0.0.1:8888&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[94]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
@@ -13170,7 +13185,7 @@ div#notebook {
 <span class="s1">                });</span>
 <span class="s1">            }</span>
 <span class="s1">            </span>
-<span class="s1">            itr = mytable.find(22);</span>
+<span class="s1">            itr = mytable.find(11);</span>
 <span class="s1">            if (itr == mytable.end()) {</span>
 <span class="s1">                mytable.emplace( _self, [&amp;]( auto&amp; row ) {</span>
 <span class="s1">                    row.primary = 22;</span>
@@ -13178,14 +13193,16 @@ div#notebook {
 <span class="s1">                    row.data = 2222;</span>
 <span class="s1">                });</span>
 <span class="s1">            } else {</span>
-<span class="s1">                print(itr-&gt;primary, &quot; &quot;, itr-&gt;secondary, &quot;\n&quot;);</span>
+<span class="s1">                print(itr-&gt;primary, &quot; &quot;, itr-&gt;secondary, &quot; &quot;, itr-&gt;data, &quot;\n&quot;);</span>
 <span class="s1">            }</span>
 
 <span class="s1">            auto idx = mytable.get_index&lt;&quot;bysecondary&quot;_n&gt;();</span>
-<span class="s1">            print(idx.begin() == idx.end());</span>
-<span class="s1">            for ( auto itr = idx.begin(); itr != idx.end(); itr++ ) {</span>
-<span class="s1">                print(itr-&gt;primary, &quot; &quot;, itr-&gt;secondary);</span>
-<span class="s1">            }</span>
+<span class="s1">            auto itr_sec = idx.find(222);</span>
+<span class="s1">            print(itr_sec == idx.end(), &quot;\n&quot;);</span>
+<span class="s1">            print(itr_sec-&gt;primary, &quot; &quot;, itr_sec-&gt;secondary, &quot; &quot;, itr_sec-&gt;data, &quot;\n&quot;);</span>
+
+<span class="s1">            itr_sec = idx.find(888);</span>
+<span class="s1">            print(itr_sec == idx.end(), &quot;\n&quot;);</span>
 <span class="s1">        }</span>
 <span class="s1">    }</span>
 <span class="s1">}</span>
@@ -13222,7 +13239,7 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="prompt input_prompt">In&nbsp;[95]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
@@ -13248,9 +13265,12 @@ done!
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>22 222
+<pre>11 44 1111
+false
+22 222 2222
 true
-261
+
+1201
 </pre>
 </div>
 </div>
