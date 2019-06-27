@@ -18,17 +18,6 @@ psw = wallet.create('test')
 wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
 wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
 
-def publish_contract(account_name, code, abi):
-    m = hashlib.sha256()
-    code = compile(code, "contract", 'exec')
-    code = marshal.dumps(code)
-    m.update(code)
-    code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
-    if code_hash != r['code_hash']:
-        eosapi.set_contract(account_name, code, abi, 1)
-    return True
-
 #eosapi.set_nodes(['https://nodes.uuos.network:8443'])
 eosapi.set_nodes(['http://127.0.0.1:8888'])
 
@@ -81,6 +70,7 @@ class cpp_compiler(object):
         self.entry = entry
         if not cpp_file.endswith('.cpp'):
             raise 'Not a cpp file'
+
     def compile_cpp_file(self):
         tmp_path = self.cpp_file[:-4]
         #%system rm test.obj test.wasm
@@ -180,16 +170,6 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply'):
         f.write(code)
     return compile_cpp_file(src_path, includes, entry)
 
-def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
-    code = compile_cpp_src(account_name, code, includes, entry=entry)
-    code = open(f'tmp/{account_name}.wasm', 'rb').read()
-    m = hashlib.sha256()
-    m.update(code)
-    code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
-    if code_hash != r['code_hash']:
-        r = eosapi.set_contract(account_name, code, abi, 0)
-
 def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry='apply'):
     code = compile_cpp_file(file_name, includes, entry=entry)
     assert code
@@ -204,3 +184,28 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry
         r = eosapi.set_contract(account_name, code, abi, 0)
     return True
 #print(find_include_path())
+
+def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
+    code = compile_cpp_src(account_name, code, includes, entry=entry)
+    code = open(f'tmp/{account_name}.wasm', 'rb').read()
+    m = hashlib.sha256()
+    m.update(code)
+    code_hash = m.hexdigest()
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        r = eosapi.set_contract(account_name, code, abi, 0)
+    return True
+
+def publish_contract(account_name, code, abi, vm_type, includes = [], entry='apply'):
+    if vm_type == 1:
+        m = hashlib.sha256()
+        code = compile(code, "contract", 'exec')
+        code = marshal.dumps(code)
+        m.update(code)
+        code_hash = m.hexdigest()
+        r = eosapi.get_code(account_name)
+        if code_hash != r['code_hash']:
+            eosapi.set_contract(account_name, code, abi, 1)
+        return True
+    else:
+        return publish_cpp_contract(account_name, code, abi, includes, entry)
