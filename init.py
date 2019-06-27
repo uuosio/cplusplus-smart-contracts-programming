@@ -79,10 +79,9 @@ class cpp_compiler(object):
         self.cpp_file = cpp_file
         self.includes = includes
         self.entry = entry
-
-    def compile_cpp_file(self):
-        if not self.cpp_file.endswith('.cpp'):
+        if not cpp_file.endswith('.cpp'):
             raise 'Not a cpp file'
+    def compile_cpp_file(self):
         tmp_path = self.cpp_file[:-4]
         #%system rm test.obj test.wasm
         #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
