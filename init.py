@@ -73,122 +73,127 @@ def find_eosio_cdt_path():
     eosio_cpp = os.path.dirname(eosio_cpp)
     return os.path.dirname(eosio_cpp)
 
-def compile_cpp_file(src_path, includes = [], entry='apply'):
-    if src_path.endswith('.cpp'):
-        src_path = src_path[:-4]
-    tmp_path = src_path
-    #%system rm test.obj test.wasm
-    #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
-    #%system eosio-ld test.obj -o test.wasm
-    #%ls
-    if sys.platform == 'darwin':
-        dl_sufix = 'dylib'
-    else:
-        dl_sufix = 'so'
-    eosio_cdt_path = find_eosio_cdt_path()
-    clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
-     '-o',
-     f'{tmp_path}.obj',
-     f'{tmp_path}.cpp',
-     '--target=wasm32',
-     '-ffreestanding',
-     '-nostdlib',
-     '-fno-builtin',
-     '-fno-threadsafe-statics',
-     '-fno-exceptions',
-     '-fno-rtti',
-     '-fmodules-ts',
-     '-DBOOST_DISABLE_ASSERTS',
-     '-DBOOST_EXCEPTION_DISABLE',
-     '-Xclang',
-     '-load',
-     '-Xclang',
-     f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
-     f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
-     '-mllvm',
-     '-use-cfl-aa-in-codegen=both',
-     f'-I{eosio_cdt_path}/bin/../include/libcxx',
-     f'-I{eosio_cdt_path}/bin/../include/libc',
-     f'-I{eosio_cdt_path}/bin/../include',
-     f'--sysroot={eosio_cdt_path}/bin/../',
-     f'-I{eosio_cdt_path}/bin/../include/eosiolib/core',
-     f'-I{eosio_cdt_path}/bin/../include/eosiolib/contracts',
-     '-c',
-     f'-I{eosio_cdt_path}/include/eosiolib/capi',
-     f'-I{eosio_cdt_path}/include/eosiolib/core',
-     '-O3',
-     '--std=c++17',
-     ]
-    for include in includes:
-        clang_7_args.append(f"-I{include}")
+class cpp_compiler(object):
 
-    wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
-     '--gc-sections',
-     '--strip-all',
-     '-zstack-size=8192',
-     '--merge-data-segments',
-     '-e', f'{entry}',
-     '--only-export', f'{entry}:function',
-     '-lc++',
-     '-lc',
-     '-leosio',
-     '-leosio_dsm',
-     '-mllvm',
-     '-use-cfl-aa-in-codegen=both',
-     f'{tmp_path}.obj',
-     f'-L{eosio_cdt_path}/bin/../lib',
-     '-stack-first',
-     '--lto-O3',
-     '-o',
-     f'{tmp_path}.wasm',
-     f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
+    def __init__(self, cpp_file, includes = [], entry='apply'):
+        self.cpp_file = cpp_file
+        self.includes = includes
+        self.entry = entry
 
-    try:
-        ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
-        print(ret.decode('utf8'))
-        ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
-        print(ret.decode('utf8'))
-    except subprocess.CalledProcessError as e:
-        print("error (code {}):".format(e.returncode))
-        print(e.output.decode('utf8'))
-        return False
-    return True
+    def compile_cpp_file(self):
+        if not self.cpp_file.endswith('.cpp'):
+            raise 'Not a cpp file'
+        tmp_path = self.cpp_file[:-4]
+        #%system rm test.obj test.wasm
+        #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
+        #%system eosio-ld test.obj -o test.wasm
+        #%ls
+        if sys.platform == 'darwin':
+            dl_sufix = 'dylib'
+        else:
+            dl_sufix = 'so'
+        eosio_cdt_path = find_eosio_cdt_path()
+        clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
+        '-o',
+        f'{tmp_path}.obj',
+        f'{tmp_path}.cpp',
+        '--target=wasm32',
+        '-ffreestanding',
+        '-nostdlib',
+        '-fno-builtin',
+        '-fno-threadsafe-statics',
+        '-fno-exceptions',
+        '-fno-rtti',
+        '-fmodules-ts',
+        '-DBOOST_DISABLE_ASSERTS',
+        '-DBOOST_EXCEPTION_DISABLE',
+        '-Xclang',
+        '-load',
+        '-Xclang',
+        f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
+        f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
+        '-mllvm',
+        '-use-cfl-aa-in-codegen=both',
+        f'-I{eosio_cdt_path}/bin/../include/libcxx',
+        f'-I{eosio_cdt_path}/bin/../include/libc',
+        f'-I{eosio_cdt_path}/bin/../include',
+        f'--sysroot={eosio_cdt_path}/bin/../',
+        f'-I{eosio_cdt_path}/bin/../include/eosiolib/core',
+        f'-I{eosio_cdt_path}/bin/../include/eosiolib/contracts',
+        '-c',
+        f'-I{eosio_cdt_path}/include/eosiolib/capi',
+        f'-I{eosio_cdt_path}/include/eosiolib/core',
+        '-O3',
+        '--std=c++17',
+        ]
+        for include in self.includes:
+            clang_7_args.append(f"-I{include}")
 
-def compile_cpp_src(src_path, code, includes = [], entry='apply'):
-    if src_path.endswith('.cpp'):
-        pass
-    else:
-        src_path += '.cpp'
+        wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
+        '--gc-sections',
+        '--strip-all',
+        '-zstack-size=8192',
+        '--merge-data-segments',
+        '-e', f'{self.entry}',
+        '--only-export', f'{self.entry}:function',
+        '-lc++',
+        '-lc',
+        '-leosio',
+        '-leosio_dsm',
+        '-mllvm',
+        '-use-cfl-aa-in-codegen=both',
+        f'{tmp_path}.obj',
+        f'-L{eosio_cdt_path}/bin/../lib',
+        '-stack-first',
+        '--lto-O3',
+        '-o',
+        f'{tmp_path}.wasm',
+        f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
 
+        try:
+            ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
+            print(ret.decode('utf8'))
+            ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
+            print(ret.decode('utf8'))
+        except subprocess.CalledProcessError as e:
+            print("error (code {}):".format(e.returncode))
+            print(e.output.decode('utf8'))
+            return None
+        return open(f'{tmp_path}.wasm', 'rb').read()
+
+def compile_cpp_file(src_path, includes=[], entry='apply'):
+    compiler = cpp_compiler(src_path, includes, entry)
+    return compiler.compile_cpp_file()
+
+def compile_cpp_src(account_name, code, includes = [], entry='apply'):
+    if not os.path.exists('tmp'):
+        os.mkdir('tmp')
+    src_path = os.path.join('tmp', account_name+'.cpp')
     if os.path.exists(src_path):
         old_code = open(src_path).read()
         if old_code == code:
             tmp_path = src_path[:-4]
-            if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(f'{tmp_path}.wasm'):
-                if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(f'{tmp_path}.wasm'):
-                    return True
+            wasm_file = f'{tmp_path}.wasm'
+            if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(wasm_file):
+                if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(wasm_file):
+                    return open(wasm_file, 'rb').read()
     with open(src_path, 'w') as f:
         f.write(code)
     return compile_cpp_file(src_path, includes, entry)
 
 def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
-    if not os.path.exists('tmp'):
-        os.mkdir('tmp')
-    assert compile_cpp_src(f'tmp/{account_name}', code, includes, entry=entry)
-
+    code = compile_cpp_src(account_name, code, includes, entry=entry)
     code = open(f'tmp/{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
     m.update(code)
     code_hash = m.hexdigest()
-
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
         r = eosapi.set_contract(account_name, code, abi, 0)
 
 def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry='apply'):
-    assert compile_cpp_file(file_name, includes, entry=entry)
-
-    code = open(f'{file_name}.wasm', 'rb').read()
+    code = compile_cpp_file(file_name, includes, entry=entry)
+    assert code
     m = hashlib.sha256()
     m.update(code)
     code_hash = m.hexdigest()
