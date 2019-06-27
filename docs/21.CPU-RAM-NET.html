@@ -13115,33 +13115,13 @@ div#notebook {
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">marshal</span>
-<span class="kn">from</span> <span class="nn">pyeoskit</span> <span class="k">import</span> <span class="n">eosapi</span><span class="p">,</span> <span class="n">wallet</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">config</span>
-<span class="n">db</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">config</span><span class="o">.</span><span class="n">main_token</span> <span class="o">=</span> <span class="s1">&#39;UUOS&#39;</span>
-
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;test.wallet&#39;</span><span class="p">):</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;test.wallet&#39;</span><span class="p">)</span>
-<span class="n">psw</span> <span class="o">=</span> <span class="n">wallet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
-<span class="n">wallet</span><span class="o">.</span><span class="n">import_key</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc&#39;</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">publish_contract</span><span class="p">(</span><span class="n">account_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">abi</span><span class="p">):</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
-    <span class="n">code</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">)</span>
-    <span class="n">code</span> <span class="o">=</span> <span class="n">marshal</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-    <span class="n">code_hash</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">account_name</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">code_hash</span> <span class="o">!=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;code_hash&#39;</span><span class="p">]:</span>
-        <span class="n">eosapi</span><span class="o">.</span><span class="n">set_contract</span><span class="p">(</span><span class="n">account_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">True</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1">#eosapi.set_nodes([&#39;https://nodes.uuos.network:8443&#39;])</span>
 <span class="n">eosapi</span><span class="o">.</span><span class="n">set_nodes</span><span class="p">([</span><span class="s1">&#39;http://127.0.0.1:8888&#39;</span><span class="p">])</span>
+<span class="n">config</span><span class="o">.</span><span class="n">main_token</span><span class="o">=</span><span class="s1">&#39;UUOS&#39;</span>
 </pre></div>
 
     </div>
@@ -15047,7 +15027,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[134]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
@@ -15094,7 +15074,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>API returned status code: 500 {&#34;code&#34;:500,&#34;message&#34;:&#34;Internal Service Error&#34;,&#34;error&#34;:{&#34;code&#34;:3080001,&#34;name&#34;:&#34;ram_usage_exceeded&#34;,&#34;what&#34;:&#34;Account using more than allotted RAM usage&#34;,&#34;details&#34;:[{&#34;message&#34;:&#34;account helloworld11 has insufficient ram; needs 439648 bytes has 305438 bytes&#34;,&#34;file&#34;:&#34;resource_limits.cpp&#34;,&#34;line_number&#34;:213,&#34;method&#34;:&#34;verify_account_ram_usage&#34;}]}}
+<pre>API returned status code: 500 {&#34;code&#34;:500,&#34;message&#34;:&#34;Internal Service Error&#34;,&#34;error&#34;:{&#34;code&#34;:3080001,&#34;name&#34;:&#34;ram_usage_exceeded&#34;,&#34;what&#34;:&#34;Account using more than allotted RAM usage&#34;,&#34;details&#34;:[{&#34;message&#34;:&#34;account helloworld11 has insufficient ram; needs 440648 bytes has 305438 bytes&#34;,&#34;file&#34;:&#34;resource_limits.cpp&#34;,&#34;line_number&#34;:213,&#34;method&#34;:&#34;verify_account_ram_usage&#34;}]}}
 </pre>
 </div>
 </div>
