@@ -2,7 +2,8 @@
 
 # C++智能合约编程
 
-[![](images/c++-smart-contract-programming.png?raw=true)](https://www.youtube.com/watch?v=cryCJU-uIy0 "C++ Smart Contract Programming Brief Introduction")
+[![](images/c++-smart-contract-programming.png?raw=true)](https://www.bilibili.com/video/av56769964 "C++ Smart Contract Programming Brief Introduction")
+
 
 # 目录
 
