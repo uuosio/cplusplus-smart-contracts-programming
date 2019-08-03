@@ -186,7 +186,7 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry
     return True
 #print(find_include_path())
 
-def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply', opt='O3'):
+def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply', opt='O3',vm_type=0):
     code = compile_cpp_src(account_name, code, includes, entry=entry, opt=opt)
     code = open(f'tmp/{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
@@ -194,7 +194,7 @@ def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply
     code_hash = m.hexdigest()
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
-        r = eosapi.set_contract(account_name, code, abi, 0)
+        r = eosapi.set_contract(account_name, code, abi, vm_type)
     return True
 
 def publish_py_contract(account_name, code, abi, vm_type=1, includes = [], entry='apply'):
