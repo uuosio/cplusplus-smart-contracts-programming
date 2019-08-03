@@ -28,6 +28,7 @@
 > - [19.数据存储-3-应用](https://uuosio.github.io/cplusplus-smart-contract-programming/19.database-3.html)
 > - [20.调用其它合约代码](https://uuosio.github.io/cplusplus-smart-contract-programming/20.call-other-contract.html)
 > - [21.CPU-RAM-NET](https://uuosio.github.io/cplusplus-smart-contract-programming/21.CPU-RAM-NET.html)
+> - [22.链下调用智能合约代码](https://uuosio.github.io/cplusplus-smart-contract-programming/22-call-contract-offchain.html)
 
 
 # C++ Smart Contract Programming
@@ -57,5 +58,6 @@
 > - [19.database-3](https://uuosio.github.io/cplusplus-smart-contract-programming/19.database-3.html)
 > - [20.call code of other contract](https://uuosio.github.io/cplusplus-smart-contract-programming/20.call-other-contract.html)
 > - [21.CPU-RAM-NET](https://uuosio.github.io/cplusplus-smart-contract-programming/21.CPU-RAM-NET.html)
+> - [22.call-contract-offchain](https://uuosio.github.io/cplusplus-smart-contract-programming/22-call-contract-offchain.html)
 
 # Happy coding!
