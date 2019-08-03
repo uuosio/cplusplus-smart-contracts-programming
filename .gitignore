@@ -5,4 +5,4 @@ wasm-ld.c
 test.wallet
 *.obj
 *.wasm
-
+.DS_Store
