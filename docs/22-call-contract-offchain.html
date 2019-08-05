@@ -13113,9 +13113,18 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="https://www.bilibili.com/video/av62325981">bilibili视频</a></p>
+<p><a href="https://www.youtube.com/watch?v=nAl9I88l6so">video on youtube</a></p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
@@ -13184,9 +13193,6 @@ div#notebook {
 <span class="s1">            multi_index&lt;&quot;record&quot;_n, record&gt; mytable(name(code), scope);</span>
 <span class="s1">            getvalue rec = unpack_args&lt;getvalue&gt;();</span>
 <span class="s1">            auto itr = mytable.find(rec.primary);</span>
-<span class="s1">            if (mytable.end() != itr) {</span>
-<span class="s1">                eosio::print(itr-&gt;data);</span>
-<span class="s1">            }</span>
 <span class="s1">            auto packed_rec = eosio::pack&lt;record&gt;(*itr);</span>
 <span class="s1">            eosio::printhex(packed_rec.data(), packed_rec.size());</span>
 <span class="s1">        }</span>
@@ -13199,7 +13205,7 @@ div#notebook {
 <span class="s1">   &quot;version&quot;: &quot;eosio::abi/1.0&quot;,</span>
 <span class="s1">   &quot;types&quot;: [],</span>
 <span class="s1">  &quot;structs&quot;: [{</span>
-<span class="s1">      &quot;name&quot;: &quot;setvalue&quot;,</span>
+<span class="s1">      &quot;name&quot;: &quot;record&quot;,</span>
 <span class="s1">      &quot;base&quot;: &quot;&quot;,</span>
 <span class="s1">      &quot;fields&quot;: [</span>
 <span class="s1">        {&quot;name&quot;:&quot;primary&quot;, &quot;type&quot;:&quot;uint64&quot;},</span>
@@ -13219,7 +13225,7 @@ div#notebook {
 <span class="s1">      &quot;ricardian_contract&quot;: &quot;&quot;</span>
 <span class="s1">    },{</span>
 <span class="s1">      &quot;name&quot;: &quot;setvalue&quot;,</span>
-<span class="s1">      &quot;type&quot;: &quot;setvalue&quot;,</span>
+<span class="s1">      &quot;type&quot;: &quot;record&quot;,</span>
 <span class="s1">      &quot;ricardian_contract&quot;: &quot;&quot;</span>
 <span class="s1">    }</span>
 <span class="s1">  ],</span>
@@ -13259,7 +13265,7 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
@@ -13287,7 +13293,7 @@ done!
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-1349
+1358
 </pre>
 </div>
 </div>
@@ -13298,7 +13304,7 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
@@ -13316,7 +13322,7 @@ done!
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[46]:</div>
+    <div class="prompt output_prompt">Out[64]:</div>
 
 
 
@@ -13324,7 +13330,7 @@ done!
 <div class="output_text output_subarea output_execute_result">
 <pre>{
     &#34;results&#34;: {
-        &#34;output&#34;: &#34;hello,worldddd0b000000000000000e68656c6c6f2c776f726c64646464&#34;
+        &#34;output&#34;: &#34;0b000000000000000e68656c6c6f2c776f726c64646464&#34;
     }
 }</pre>
 </div>
@@ -13337,7 +13343,44 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[65]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">pack_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span><span class="mi">11</span><span class="p">})</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">call_contract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
+<span class="n">eosapi</span><span class="o">.</span><span class="n">unpack_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;setvalue&#39;</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[65]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;primary&#39;: 11, &#39;data&#39;: &#39;hello,worldddd&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[69]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
@@ -13364,90 +13407,22 @@ done!
 <span class="s1">   EOSLIB_SERIALIZE( record, (primary)(data))</span>
 <span class="s1">};</span>
 
-<span class="s1">struct getvalue {</span>
-<span class="s1">   uint64_t  primary;</span>
-<span class="s1">   uint64_t primary_key() const { return primary; }</span>
-<span class="s1">   EOSLIB_SERIALIZE( getvalue, (primary))</span>
-<span class="s1">};</span>
-
-
-<span class="s1">template&lt;typename T&gt;</span>
-<span class="s1">T unpack_args() {</span>
-<span class="s1">    size_t raw_args_size = action_data_size();</span>
-<span class="s1">    check(raw_args_size &gt; 0, &quot;bad args&quot;);</span>
-<span class="s1">    vector&lt;char&gt; raw_args(raw_args_size);</span>
-<span class="s1">    read_action_data(raw_args.data(), raw_args_size);</span>
-<span class="s1">    T rec = eosio::unpack&lt;T&gt;(raw_args);</span>
-<span class="s1">    return rec;</span>
-<span class="s1">}</span>
-
 <span class="s1">extern &quot;C&quot; {</span>
 <span class="s1">    void apply( uint64_t receiver, uint64_t code, uint64_t action ) {</span>
-<span class="s1">        if (&quot;setvalue&quot;_n.value == action) {</span>
+<span class="s1">        if (&quot;getvalue&quot;_n.value == action) {</span>
 <span class="s1">            uint64_t scope = code;</span>
 <span class="s1">            uint64_t payer = receiver;</span>
 <span class="s1">            multi_index&lt;&quot;record&quot;_n, record&gt; mytable(name(code), scope);</span>
-<span class="s1">            </span>
-<span class="s1">            record rec = unpack_args&lt;record&gt;();</span>
-<span class="s1">            auto itr = mytable.find(rec.primary);</span>
-<span class="s1">            </span>
-<span class="s1">            if (mytable.end() == itr) {</span>
-<span class="s1">                mytable.emplace( name(payer), [&amp;]( auto&amp; row ) {</span>
-<span class="s1">                    row = rec;</span>
-<span class="s1">                });</span>
-<span class="s1">            } else {</span>
-<span class="s1">                mytable.modify( itr, name(payer), [&amp;]( auto&amp; row ) {</span>
-<span class="s1">                    row.data = rec.data;</span>
-<span class="s1">                });</span>
-<span class="s1">            }</span>
-<span class="s1">        } else if (&quot;getvalue&quot;_n.value == action) {</span>
-<span class="s1">            uint64_t scope = code;</span>
-<span class="s1">            uint64_t payer = receiver;</span>
-<span class="s1">            multi_index&lt;&quot;record&quot;_n, record&gt; mytable(name(code), scope);</span>
-<span class="s1">            getvalue rec = unpack_args&lt;getvalue&gt;();</span>
-<span class="s1">            auto itr = mytable.find(rec.primary);</span>
-<span class="s1">            auto packed_rec = eosio::pack&lt;record&gt;(*itr);</span>
-<span class="s1">            eosio::printhex(packed_rec.data(), packed_rec.size());</span>
+<span class="s1">            mytable.emplace( name(payer), [&amp;]( auto&amp; row ) {</span>
+
+<span class="s1">            });</span>
+
 <span class="s1">        }</span>
 <span class="s1">    }</span>
 <span class="s1">}</span>
 <span class="s1">&#39;&#39;&#39;</span>
 
-<span class="n">abi</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">{</span>
-<span class="s1">   &quot;version&quot;: &quot;eosio::abi/1.0&quot;,</span>
-<span class="s1">   &quot;types&quot;: [],</span>
-<span class="s1">  &quot;structs&quot;: [{</span>
-<span class="s1">      &quot;name&quot;: &quot;setvalue&quot;,</span>
-<span class="s1">      &quot;base&quot;: &quot;&quot;,</span>
-<span class="s1">      &quot;fields&quot;: [</span>
-<span class="s1">        {&quot;name&quot;:&quot;primary&quot;, &quot;type&quot;:&quot;uint64&quot;},</span>
-<span class="s1">        {&quot;name&quot;:&quot;data&quot;, &quot;type&quot;:&quot;string&quot;},</span>
-<span class="s1">       ]</span>
-<span class="s1">    },{</span>
-<span class="s1">      &quot;name&quot;: &quot;getvalue&quot;,</span>
-<span class="s1">      &quot;base&quot;: &quot;&quot;,</span>
-<span class="s1">      &quot;fields&quot;: [</span>
-<span class="s1">        {&quot;name&quot;:&quot;primary&quot;, &quot;type&quot;:&quot;uint64&quot;},</span>
-<span class="s1">       ]</span>
-<span class="s1">    }</span>
-<span class="s1">  ],</span>
-<span class="s1">  &quot;actions&quot;: [{</span>
-<span class="s1">      &quot;name&quot;: &quot;getvalue&quot;,</span>
-<span class="s1">      &quot;type&quot;: &quot;getvalue&quot;,</span>
-<span class="s1">      &quot;ricardian_contract&quot;: &quot;&quot;</span>
-<span class="s1">    },{</span>
-<span class="s1">      &quot;name&quot;: &quot;setvalue&quot;,</span>
-<span class="s1">      &quot;type&quot;: &quot;setvalue&quot;,</span>
-<span class="s1">      &quot;ricardian_contract&quot;: &quot;&quot;</span>
-<span class="s1">    }</span>
-<span class="s1">  ],</span>
-<span class="s1">  &quot;tables&quot;: [</span>
-<span class="s1">  ]</span>
-<span class="s1">}</span>
-<span class="s1">&#39;&#39;&#39;</span>
-
-<span class="n">publish_cpp_contract</span><span class="p">(</span><span class="s1">&#39;helloworld11&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">abi</span><span class="p">)</span>
+<span class="n">publish_cpp_contract</span><span class="p">(</span><span class="s1">&#39;helloworld11&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done!&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -13478,12 +13453,10 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="prompt input_prompt">In&nbsp;[70]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
-<span class="n">args</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">pack_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span><span class="mi">11</span><span class="p">})</span>
-<span class="n">eosapi</span><span class="o">.</span><span class="n">call_contract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">eosapi</span><span class="o">.</span><span class="n">call_contract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13496,7 +13469,7 @@ done!
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[56]:</div>
+    <div class="prompt output_prompt">Out[70]:</div>
 
 
 
@@ -13504,7 +13477,11 @@ done!
 <div class="output_text output_subarea output_execute_result">
 <pre>{
     &#34;results&#34;: {
-        &#34;output&#34;: &#34;0b000000000000000e68656c6c6f2c776f726c64646464&#34;
+        &#34;error&#34;: {
+            &#34;name&#34;: &#34;eosio_assert_message_exception&#34;,
+            &#34;code&#34;: 3050003,
+            &#34;what&#34;: &#34;eosio_assert_message assertion failure (3050003)\nassertion failure with message: db_store_i64\n&#34;
+        }
     }
 }</pre>
 </div>
@@ -13517,14 +13494,45 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="prompt input_prompt">In&nbsp;[78]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;helloworld11&#39;</span>
-<span class="n">args</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">pack_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span><span class="mi">11</span><span class="p">})</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">eosapi</span><span class="o">.</span><span class="n">call_contract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
-<span class="n">args</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
-<span class="n">eosapi</span><span class="o">.</span><span class="n">unpack_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;setvalue&#39;</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">init</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1">#eosapi.set_nodes([&#39;https://nodes.uuos.network:8443&#39;])</span>
+<span class="n">eosapi</span><span class="o">.</span><span class="n">set_nodes</span><span class="p">([</span><span class="s1">&#39;http://127.0.0.1:8888&#39;</span><span class="p">])</span>
+<span class="n">config</span><span class="o">.</span><span class="n">main_token</span><span class="o">=</span><span class="s1">&#39;UUOS&#39;</span>
+<span class="n">wallet</span><span class="o">.</span><span class="n">import_key</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">code</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">#include &lt;eosio/print.hpp&gt;</span>
+<span class="s1">#include &lt;eosio/name.hpp&gt;</span>
+<span class="s1">#include &lt;eosio/action.hpp&gt;</span>
+<span class="s1">#include &lt;eosio/system.hpp&gt;</span>
+<span class="s1">#include &lt;eosio/multi_index.hpp&gt;</span>
+
+<span class="s1">#include &lt;string&gt;</span>
+
+<span class="s1">using namespace std;</span>
+<span class="s1">using namespace eosio;</span>
+
+<span class="s1">struct record {</span>
+<span class="s1">   uint64_t  primary;</span>
+<span class="s1">   string    data;</span>
+<span class="s1">   uint64_t primary_key() const { return primary; }</span>
+<span class="s1">   EOSLIB_SERIALIZE( record, (primary)(data))</span>
+<span class="s1">};</span>
+
+<span class="s1">extern &quot;C&quot; {</span>
+<span class="s1">    void apply( uint64_t receiver, uint64_t code, uint64_t action ) {</span>
+<span class="s1">        if (&quot;getvalue&quot;_n.value == action) {</span>
+<span class="s1">            eosio::print(current_time_point().sec_since_epoch());</span>
+<span class="s1">        }</span>
+<span class="s1">    }</span>
+<span class="s1">}</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">publish_cpp_contract</span><span class="p">(</span><span class="s1">&#39;helloworld11&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done!&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13537,15 +13545,15 @@ done!
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[55]:</div>
+    <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
 
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;primary&#39;: 11, &#39;data&#39;: &#39;hello,worldddd&#39;}</pre>
+done!
+</pre>
 </div>
-
 </div>
 
 </div>
@@ -13554,13 +13562,41 @@ done!
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[79]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">eosapi</span><span class="o">.</span><span class="n">call_contract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[79]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{
+    &#34;results&#34;: {
+        &#34;error&#34;: {
+            &#34;name&#34;: &#34;eosio_assert_message_exception&#34;,
+            &#34;code&#34;: 3050003,
+            &#34;what&#34;: &#34;eosio_assert_message assertion failure (3050003)\nassertion failure with message: current_time\n&#34;
+        }
+    }
+}</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
