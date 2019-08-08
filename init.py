@@ -140,10 +140,19 @@ class cpp_compiler(object):
         f'{tmp_path}.wasm',
         f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
 
+        eosio_pp = [
+            f'{eosio_cdt_path}/bin/eosio-pp',
+            '-o',
+            f'{tmp_path}.wasm',
+            f'{tmp_path}.wasm',
+        ]
+
         try:
             ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
             print(ret.decode('utf8'))
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
+            print(ret.decode('utf8'))
+            ret = subprocess.check_output(eosio_pp, stderr=subprocess.STDOUT)
             print(ret.decode('utf8'))
         except subprocess.CalledProcessError as e:
             print("error (code {}):".format(e.returncode))
