@@ -125,17 +125,18 @@ class cpp_compiler(object):
             f'-I{eosio_cdt_path}/include/eosiolib/core',
             '--std=c++17',
             ]
+            print('Compiling', cpp_file)
             for opt in opts:
                 clang_7_args.append(opt)
             for include in self.includes:
                 clang_7_args.append(f"-I{include}")
-                try:
-                    ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
-                    print(ret.decode('utf8'))
-                except subprocess.CalledProcessError as e:
-                    print("error (code {}):".format(e.returncode))
-                    print(e.output.decode('utf8'))
-                    return None
+            try:
+                ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
+                print(ret.decode('utf8'))
+            except subprocess.CalledProcessError as e:
+                print("error (code {}):".format(e.returncode))
+                print(e.output.decode('utf8'))
+                return None
 
         wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
         '--gc-sections',
@@ -167,7 +168,9 @@ class cpp_compiler(object):
             f'{self.account_name}.wasm',
             f'{self.account_name}.wasm',
         ]
-
+        
+        print('Generating', f'{self.account_name}.wasm')
+        
         try:
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
             print(ret.decode('utf8'))
@@ -195,7 +198,7 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opts=['-O3
         old_code = open(src_path).read()
         if old_code == code:
             tmp_path = src_path[:-4]
-            wasm_file = f'{tmp_path}.wasm'
+            wasm_file = f'{account_name}.wasm'
             if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(wasm_file):
                 if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(wasm_file):
                     return open(wasm_file, 'rb').read()
