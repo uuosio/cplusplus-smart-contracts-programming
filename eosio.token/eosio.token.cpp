@@ -1,27 +1,22 @@
-/**
- *  @file
- *  @copyright defined in eos/LICENSE.txt
- */
-
-#include "eosio.token.hpp"
+#include <eosio.token/eosio.token.hpp>
 
 namespace eosio {
 
-void token::create( name   issuer,
-                    asset  maximum_supply )
+void token::create( const name&   issuer,
+                    const asset&  maximum_supply )
 {
-    require_auth( _self );
+    require_auth( get_self() );
 
     auto sym = maximum_supply.symbol;
     check( sym.is_valid(), "invalid symbol name" );
     check( maximum_supply.is_valid(), "invalid supply");
     check( maximum_supply.amount > 0, "max-supply must be positive");
 
-    stats statstable( _self, sym.code().raw() );
+    stats statstable( get_self(), sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
     check( existing == statstable.end(), "token with symbol already exists" );
 
-    statstable.emplace( _self, [&]( auto& s ) {
+    statstable.emplace( get_self(), [&]( auto& s ) {
        s.supply.symbol = maximum_supply.symbol;
        s.max_supply    = maximum_supply;
        s.issuer        = issuer;
@@ -29,16 +24,17 @@ void token::create( name   issuer,
 }
 
 
-void token::issue( name to, asset quantity, string memo )
+void token::issue( const name& to, const asset& quantity, const string& memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
     check( memo.size() <= 256, "memo has more than 256 bytes" );
 
-    stats statstable( _self, sym.code().raw() );
+    stats statstable( get_self(), sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
     check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
     const auto& st = *existing;
+    check( to == st.issuer, "tokens can only be issued to issuer account" );
 
     require_auth( st.issuer );
     check( quantity.is_valid(), "invalid quantity" );
@@ -52,21 +48,15 @@ void token::issue( name to, asset quantity, string memo )
     });
 
     add_balance( st.issuer, quantity, st.issuer );
-
-    if( to != st.issuer ) {
-      SEND_INLINE_ACTION( *this, transfer, { {st.issuer, "active"_n} },
-                          { st.issuer, to, quantity, memo }
-      );
-    }
 }
 
-void token::retire( asset quantity, string memo )
+void token::retire( const asset& quantity, const string& memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
     check( memo.size() <= 256, "memo has more than 256 bytes" );
 
-    stats statstable( _self, sym.code().raw() );
+    stats statstable( get_self(), sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
     check( existing != statstable.end(), "token with symbol does not exist" );
     const auto& st = *existing;
@@ -84,16 +74,16 @@ void token::retire( asset quantity, string memo )
     sub_balance( st.issuer, quantity );
 }
 
-void token::transfer( name    from,
-                      name    to,
-                      asset   quantity,
-                      string  memo )
+void token::transfer( const name&    from,
+                      const name&    to,
+                      const asset&   quantity,
+                      const string&  memo )
 {
     check( from != to, "cannot transfer to self" );
     require_auth( from );
     check( is_account( to ), "to account does not exist");
     auto sym = quantity.symbol.code();
-    stats statstable( _self, sym.raw() );
+    stats statstable( get_self(), sym.raw() );
     const auto& st = statstable.get( sym.raw() );
 
     require_recipient( from );
@@ -110,8 +100,8 @@ void token::transfer( name    from,
     add_balance( to, quantity, payer );
 }
 
-void token::sub_balance( name owner, asset value ) {
-   accounts from_acnts( _self, owner.value );
+void token::sub_balance( const name& owner, const asset& value ) {
+   accounts from_acnts( get_self(), owner.value );
 
    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
    check( from.balance.amount >= value.amount, "overdrawn balance" );
@@ -121,9 +111,9 @@ void token::sub_balance( name owner, asset value ) {
       });
 }
 
-void token::add_balance( name owner, asset value, name ram_payer )
+void token::add_balance( const name& owner, const asset& value, const name& ram_payer )
 {
-   accounts to_acnts( _self, owner.value );
+   accounts to_acnts( get_self(), owner.value );
    auto to = to_acnts.find( value.symbol.code().raw() );
    if( to == to_acnts.end() ) {
       to_acnts.emplace( ram_payer, [&]( auto& a ){
@@ -136,17 +126,18 @@ void token::add_balance( name owner, asset value, name ram_payer )
    }
 }
 
-void token::open( name owner, const symbol& symbol, name ram_payer )
+void token::open( const name& owner, const symbol& symbol, const name& ram_payer )
 {
    require_auth( ram_payer );
 
-   auto sym_code_raw = symbol.code().raw();
+   check( is_account( owner ), "owner account does not exist" );
 
-   stats statstable( _self, sym_code_raw );
+   auto sym_code_raw = symbol.code().raw();
+   stats statstable( get_self(), sym_code_raw );
    const auto& st = statstable.get( sym_code_raw, "symbol does not exist" );
    check( st.supply.symbol == symbol, "symbol precision mismatch" );
 
-   accounts acnts( _self, owner.value );
+   accounts acnts( get_self(), owner.value );
    auto it = acnts.find( sym_code_raw );
    if( it == acnts.end() ) {
       acnts.emplace( ram_payer, [&]( auto& a ){
@@ -155,10 +146,10 @@ void token::open( name owner, const symbol& symbol, name ram_payer )
    }
 }
 
-void token::close( name owner, const symbol& symbol )
+void token::close( const name& owner, const symbol& symbol )
 {
    require_auth( owner );
-   accounts acnts( _self, owner.value );
+   accounts acnts( get_self(), owner.value );
    auto it = acnts.find( symbol.code().raw() );
    check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
    check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
@@ -167,4 +158,88 @@ void token::close( name owner, const symbol& symbol )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire) )
+using namespace eosio;
+
+name get_code() {
+   return current_receiver();
+}
+
+extern "C" {
+
+
+void token_create(uint64_t issuer, int64_t amount, uint64_t _symbol) {
+   datastream<const char*> _ds = datastream<const char*>(nullptr, 0);
+
+   eosio::token t(current_receiver(), current_receiver(), _ds);
+   asset a;
+   a.amount = amount;
+   a.symbol = eosio::symbol(_symbol);
+   t.create(name(issuer), a);
+}
+
+void token_issue( uint64_t to, int64_t amount, uint64_t _symbol, const char *memo, size_t memo_size ) {
+
+   datastream<const char*> _ds = datastream<const char*>(nullptr, 0);
+   string _memo(memo, memo_size);
+   eosio::token t(name(current_receiver()), get_code(), _ds);
+
+   asset a;
+   a.amount = amount;
+   a.symbol = eosio::symbol(_symbol);
+
+   t.issue(name(to), a, _memo);
+}
+
+
+void token_transfer( uint64_t from, uint64_t to, int64_t amount, uint64_t _symbol, const char *memo, size_t memo_size ) {
+   datastream<const char*> _ds = datastream<const char*>(nullptr, 0);
+   string _memo(memo, memo_size);
+   eosio::token t(name(current_receiver()), get_code(), _ds);
+
+   asset a;
+   a.amount = amount;
+   a.symbol = eosio::symbol(_symbol);
+
+   t.transfer(name(from), name(to), a, _memo);
+}
+
+void token_open( uint64_t owner, uint64_t _symbol, uint64_t ram_payer ) {
+   symbol _sym(_symbol);
+
+   datastream<const char*> _ds = datastream<const char*>(nullptr, 0);
+   eosio::token t(name(current_receiver()), get_code(), _ds);
+
+   t.open(name(owner), _sym, name(ram_payer));
+}
+
+
+void token_retire( int64_t amount, uint64_t _symbol, const char *memo, size_t memo_size ) {
+   datastream<const char*> _ds = datastream<const char*>(nullptr, 0);
+   string _memo(memo, memo_size);
+   eosio::token t(name(current_receiver()), get_code(), _ds);
+
+   asset quantity;
+   quantity.amount = amount;
+   quantity.symbol = eosio::symbol(_symbol);
+   t.retire(quantity, _memo);
+}
+
+}
+
+#define EOSIO_DISPATCH_NATIVE( TYPE, MEMBERS ) \
+extern "C" { \
+   void eosio_token_apply( uint64_t receiver, uint64_t code, uint64_t action ) { \
+      if( code == receiver ) { \
+         switch( action ) { \
+            EOSIO_DISPATCH_HELPER( TYPE, MEMBERS ) \
+         } \
+         /* does not allow destructor of thiscontract to run: eosio_exit(0); */ \
+      } \
+   } \
+} \
+
+EOSIO_DISPATCH_NATIVE( eosio::token, (create)(issue)(transfer)(open)(retire) )
+
+#ifndef __EOSIO_TOKEN_NO_APPLY
+EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(retire) )
+#endif
