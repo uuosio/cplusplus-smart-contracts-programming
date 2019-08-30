@@ -203,7 +203,7 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opts=['-O3
         f.write(code)
     return compile_cpp_file(account_name, src_path, includes, entry, opts=opts)
 
-def publish_cpp_contract_from_file(account_name, file_name, abi='', includes=[], entry='apply', opts=['-O3']):
+def publish_cpp_contract_from_file(account_name, file_name, abi=b'', includes=[], entry='apply', opts=['-O3']):
     code = compile_cpp_file(account_name, file_name, includes, entry=entry, opts=opts)
     assert code
     m = hashlib.sha256()
@@ -217,7 +217,7 @@ def publish_cpp_contract_from_file(account_name, file_name, abi='', includes=[],
         r = eosapi.set_contract(account_name, code, abi, 0)
     return True
 
-def publish_cpp_contract_from_files(account_name, file_names, abi = '', includes = [], entry='apply', opts=['-O3']):
+def publish_cpp_contract_from_files(account_name, file_names, abi = b'', includes = [], entry='apply', opts=['-O3']):
     code = compile_cpp_files(account_name, file_names, includes, entry=entry, opts=opts)
     assert code
     m = hashlib.sha256()
@@ -227,10 +227,6 @@ def publish_cpp_contract_from_files(account_name, file_names, abi = '', includes
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
         print('update contract')
-        if os.path.exists(f'{account_name}.abi'):
-            abi = open(f'{account_name}.abi', 'r').read()
-        else:
-            abi = b''
         r = eosapi.set_contract(account_name, code, abi, 0)
     return True
 
