@@ -65,15 +65,17 @@ def find_eosio_cdt_path():
 
 class cpp_compiler(object):
 
-    def __init__(self, cpp_file, includes = [], entry='apply'):
-        self.cpp_file = cpp_file
+    def __init__(self, account_name, cpp_files, includes = [], entry='apply'):
+        self.cpp_files = cpp_files
         self.includes = includes
         self.entry = entry
-        if not cpp_file.endswith('.cpp'):
-            raise 'Not a cpp file'
+        self.account_name = account_name
+        
+        for cpp_file in cpp_files:
+            if not cpp_file.endswith('.cpp'):
+                raise cpp_file + ' is not a cpp file'
 
-    def compile_cpp_file(self, opt='O3'):
-        tmp_path = self.cpp_file[:-4]
+    def compile_cpp_file(self, opts=['-O3']):
         #%system rm test.obj test.wasm
         #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
         #%system eosio-ld test.obj -o test.wasm
@@ -83,41 +85,57 @@ class cpp_compiler(object):
         else:
             dl_sufix = 'so'
         eosio_cdt_path = find_eosio_cdt_path()
-        clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
-        '-o',
-        f'{tmp_path}.obj',
-        f'{tmp_path}.cpp',
-        '--target=wasm32',
-        '-ffreestanding',
-        '-nostdlib',
-        '-fno-builtin',
-        '-fno-threadsafe-statics',
-        '-fno-exceptions',
-        '-fno-rtti',
-        '-fmodules-ts',
-        '-DBOOST_DISABLE_ASSERTS',
-        '-DBOOST_EXCEPTION_DISABLE',
-        '-Xclang',
-        '-load',
-        '-Xclang',
-        f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
-        f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
-        '-mllvm',
-        '-use-cfl-aa-in-codegen=both',
-        f'-I{eosio_cdt_path}/bin/../include/libcxx',
-        f'-I{eosio_cdt_path}/bin/../include/libc',
-        f'-I{eosio_cdt_path}/bin/../include',
-        f'--sysroot={eosio_cdt_path}/bin/../',
-        f'-I{eosio_cdt_path}/bin/../include/eosiolib/core',
-        f'-I{eosio_cdt_path}/bin/../include/eosiolib/contracts',
-        '-c',
-        f'-I{eosio_cdt_path}/include/eosiolib/capi',
-        f'-I{eosio_cdt_path}/include/eosiolib/core',
-        f'-{opt}',
-        '--std=c++17',
-        ]
-        for include in self.includes:
-            clang_7_args.append(f"-I{include}")
+
+        for cpp_file in self.cpp_files:
+            tmp_path = cpp_file[:-4]
+            obj_file = tmp_path + '.obj'
+            
+            if os.path.exists(obj_file):
+                if os.path.getmtime(cpp_file) <= os.path.getmtime(obj_file):
+                    continue
+            clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
+            '-o',
+            f'{tmp_path}.obj',
+            f'{tmp_path}.cpp',
+            '--target=wasm32',
+            '-ffreestanding',
+            '-nostdlib',
+            '-fno-builtin',
+            '-fno-threadsafe-statics',
+            '-fno-exceptions',
+            '-fno-rtti',
+            '-fmodules-ts',
+            '-DBOOST_DISABLE_ASSERTS',
+            '-DBOOST_EXCEPTION_DISABLE',
+            '-Xclang',
+            '-load',
+            '-Xclang',
+            f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
+            f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
+            '-mllvm',
+            '-use-cfl-aa-in-codegen=both',
+            f'-I{eosio_cdt_path}/bin/../include/libcxx',
+            f'-I{eosio_cdt_path}/bin/../include/libc',
+            f'-I{eosio_cdt_path}/bin/../include',
+            f'--sysroot={eosio_cdt_path}/bin/../',
+            f'-I{eosio_cdt_path}/bin/../include/eosiolib/core',
+            f'-I{eosio_cdt_path}/bin/../include/eosiolib/contracts',
+            '-c',
+            f'-I{eosio_cdt_path}/include/eosiolib/capi',
+            f'-I{eosio_cdt_path}/include/eosiolib/core',
+            '--std=c++17',
+            ]
+            for opt in opts:
+                clang_7_args.append(opt)
+            for include in self.includes:
+                clang_7_args.append(f"-I{include}")
+                try:
+                    ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
+                    print(ret.decode('utf8'))
+                except subprocess.CalledProcessError as e:
+                    print("error (code {}):".format(e.returncode))
+                    print(e.output.decode('utf8'))
+                    return None
 
         wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
         '--gc-sections',
@@ -132,24 +150,25 @@ class cpp_compiler(object):
         '-leosio_dsm',
         '-mllvm',
         '-use-cfl-aa-in-codegen=both',
-        f'{tmp_path}.obj',
         f'-L{eosio_cdt_path}/bin/../lib',
         '-stack-first',
         '--lto-O3',
         '-o',
-        f'{tmp_path}.wasm',
+        f'{self.account_name}.wasm',
         f'--allow-undefined-file={eosio_cdt_path}/bin/../eosio.imports']
 
+
+        for cpp_file in self.cpp_files:
+            wasm_ld_args.append(cpp_file[:-4] + '.obj')
+        
         eosio_pp = [
             f'{eosio_cdt_path}/bin/eosio-pp',
             '-o',
-            f'{tmp_path}.wasm',
-            f'{tmp_path}.wasm',
+            f'{self.account_name}.wasm',
+            f'{self.account_name}.wasm',
         ]
 
         try:
-            ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
-            print(ret.decode('utf8'))
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
             print(ret.decode('utf8'))
             ret = subprocess.check_output(eosio_pp, stderr=subprocess.STDOUT)
@@ -158,13 +177,17 @@ class cpp_compiler(object):
             print("error (code {}):".format(e.returncode))
             print(e.output.decode('utf8'))
             return None
-        return open(f'{tmp_path}.wasm', 'rb').read()
+        return open(f'{self.account_name}.wasm', 'rb').read()
 
-def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
-    compiler = cpp_compiler(src_path, includes, entry)
-    return compiler.compile_cpp_file(opt)
+def compile_cpp_file(account_name, src_path, includes=[], entry='apply', opts=['-O3']):
+    compiler = cpp_compiler(account_name, [src_path,], includes, entry)
+    return compiler.compile_cpp_file(opts)
 
-def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3'):
+def compile_cpp_files(account_name, src_paths, includes=[], entry='apply', opts=['-O3']):
+    compiler = cpp_compiler(account_name, src_paths, includes, entry)
+    return compiler.compile_cpp_file(opts)
+
+def compile_cpp_src(account_name, code, includes = [], entry='apply', opts=['-O3']):
     if not os.path.exists('tmp'):
         os.mkdir('tmp')
     src_path = os.path.join('tmp', account_name+'.cpp')
@@ -178,10 +201,10 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3'):
                     return open(wasm_file, 'rb').read()
     with open(src_path, 'w') as f:
         f.write(code)
-    return compile_cpp_file(src_path, includes, entry, opt=opt)
+    return compile_cpp_file(account_name, src_path, includes, entry, opts=opts)
 
-def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry='apply'):
-    code = compile_cpp_file(file_name, includes, entry=entry)
+def publish_cpp_contract_from_file(account_name, file_name, abi='', includes=[], entry='apply', opts=['-O3']):
+    code = compile_cpp_file(account_name, file_name, includes, entry=entry, opts=opts)
     assert code
     m = hashlib.sha256()
     m.update(code)
@@ -190,14 +213,32 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry
     r = eosapi.get_code(account_name)
     if code_hash != r['code_hash']:
         print('update contract')
-        abi = open(f'{file_name}.abi', 'r').read()
+#        abi = open(f'{account_name}.abi', 'r').read()
         r = eosapi.set_contract(account_name, code, abi, 0)
     return True
+
+def publish_cpp_contract_from_files(account_name, file_names, abi = '', includes = [], entry='apply', opts=['-O3']):
+    code = compile_cpp_files(account_name, file_names, includes, entry=entry, opts=opts)
+    assert code
+    m = hashlib.sha256()
+    m.update(code)
+    code_hash = m.hexdigest()
+
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        print('update contract')
+        if os.path.exists(f'{account_name}.abi'):
+            abi = open(f'{account_name}.abi', 'r').read()
+        else:
+            abi = b''
+        r = eosapi.set_contract(account_name, code, abi, 0)
+    return True
+
 #print(find_include_path())
 
-def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply', opt='O3',vm_type=0):
-    code = compile_cpp_src(account_name, code, includes, entry=entry, opt=opt)
-    code = open(f'tmp/{account_name}.wasm', 'rb').read()
+def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply', opts=['-O3'],vm_type=0):
+    code = compile_cpp_src(account_name, code, includes, entry=entry, opts=opts)
+    code = open(f'{account_name}.wasm', 'rb').read()
     m = hashlib.sha256()
     m.update(code)
     code_hash = m.hexdigest()
