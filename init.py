@@ -4,7 +4,7 @@ import shutil
 import hashlib
 import marshal
 import subprocess
-from pyeoskit import eosapi, wallet, db
+from pyeoskit import eosapi, wallet, db, util
 from pyeoskit import config
 from pyeoskit._hello import _eosapi
 
@@ -18,6 +18,7 @@ psw = wallet.create('test')
 
 wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
 wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
+wallet.import_key('test', '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3')
 
 #eosapi.set_nodes(['https://nodes.uuos.network:8443'])
 eosapi.set_nodes(['http://127.0.0.1:8888'])
@@ -73,7 +74,7 @@ class cpp_compiler(object):
         
         for cpp_file in cpp_files:
             if not cpp_file.endswith('.cpp'):
-                raise cpp_file + ' is not a cpp file'
+                raise Exception(cpp_file + ' is not a cpp file')
 
     def compile_cpp_file(self, opts=['-O3']):
         #%system rm test.obj test.wasm
