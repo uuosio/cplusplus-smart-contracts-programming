@@ -1,6 +1,8 @@
 
 # C++ Smart Contracts Programming
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/uuosio/cplusplus-smart-contracts-programming/HEAD)
+
 # Contents
 
 > - [1.environment](./01.environment.ipynb)
