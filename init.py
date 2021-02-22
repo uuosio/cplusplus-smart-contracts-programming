@@ -7,29 +7,26 @@ if os.path.exists('test.wallet'):
     os.remove('test.wallet')
 psw = wallet.create('test')
 
-# python_contract
-# active key of ceyelqpjeeia
-wallet.import_key('test', '5JfZz1kXF8TXsxQgwfsvZCUBeTQefYSsCLDSbSPmnbKQfFmtBny')
 
-# test_account1
-# active key of wkpmdjdsztyu
-wallet.import_key('test', '5Jaz37nnxbpAiAGQEsyxtnGfCPTJFjX9Wn6zv7V41Ko6DXSqhd9')
+# active key of hello
+wallet.import_key('test', '5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL')
+# active key of helloworld11
+wallet.import_key('test', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
+# active key of helloworld12
+wallet.import_key('test', '5JHRxntHapUryUetZgWdd3cg6BrpZLMJdqhhXnMaZiiT4qdJPhv')
 
-# test_account2
-# active key of ebvjmdibybgq
-wallet.import_key('test', '5KiVDjfHMHXzxrcLqZxGENrhCcCXBMSXP7paPbJWiMCDRMbStsF')
-
-uuosapi.set_node('http://127.0.0.1:8888')
-uuosapi.set_node('https://api.testnet.eos.io')
-
-config.setup_eos_test_network()
+config.python_contract = 'hello'
+config.main_token = 'EOS'
+config.main_token_contract = 'eosio.token'
+uuosapi.set_node('http://testnode.uuos.network')
 
 python_contract = config.python_contract
-test_account1 = 'wkpmdjdsztyu'
-test_account2 = 'ebvjmdibybgq'
+test_account1 = 'helloworld11'
+test_account2 = 'helloworld12'
 
 def run_test_code(code):
     code = uuosapi.mp_compile(python_contract, code)
-    uuosapi.deploy_python_contract(python_contract, code, b'', deploy_type=1)
-    r = uuosapi.push_action(python_contract, 'sayhello', b'hello,world', {python_contract:'active'})
+    args = uuosapi.s2n(test_account1) + code
+    uuosapi.push_action(python_contract, args, {test_account1:'active'})
+    r = uuosapi.push_action(python_contract, 'exec', b'hello,world', {test_account1:'active'})
     print(r['processed']['action_traces'][0]['console'])
